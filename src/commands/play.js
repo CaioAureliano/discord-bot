@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { joinVoiceChannel, entersState, VoiceConnectionStatus, createAudioPlayer, createAudioResource, NoSubscriberBehavior } = require('@discordjs/voice');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, NoSubscriberBehavior } = require('@discordjs/voice');
 const play = require('play-dl');
 
 module.exports = {
@@ -37,7 +37,7 @@ module.exports = {
 
                 player.on('error', console.error);
                 
-                interaction.reply('playing...');
+                await interaction.reply('playing...');
             } catch (error) {
                 console.error(error);
                 await interaction.reply('cannot play this song :(');
