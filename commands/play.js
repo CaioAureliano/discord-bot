@@ -5,7 +5,11 @@ const play = require('play-dl');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
-        .setDescription('play a song'),
+        .setDescription('play a song')
+        .addStringOption(option => 
+            option.setName('link')
+                .setDescription('Music link from Youtube/Soundcloud')
+                .setRequired(true)),
     async execute(interaction) {
         const channel = interaction.member.voice.channel;
         if (channel) {
@@ -23,7 +27,8 @@ module.exports = {
                     },
                 });
 
-                const stream = await play.stream('');
+                const url = interaction.options.getString('link');
+                const stream = await play.stream(url);
                 const resource = createAudioResource(stream.stream, { inputType: stream.type });
 
                 player.play(resource);
