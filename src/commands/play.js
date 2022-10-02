@@ -1,49 +1,15 @@
 const { SlashCommandBuilder } = require("discord.js");
-const { joinVoiceChannel, createAudioPlayer, createAudioResource, NoSubscriberBehavior } = require('@discordjs/voice');
-const play = require('play-dl');
+const { play } = require('../utils/music/player');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
-        .setDescription('play a song')
+        .setDescription('Play a song from Youtube or Soundcloud')
         .addStringOption(option => 
             option.setName('link')
-                .setDescription('Music link from Youtube/Soundcloud')
+                .setDescription('Link from Youtube/Soundcloud')
                 .setRequired(true)),
     async execute(interaction) {
-        const channel = interaction.member.voice.channel;
-        if (channel) {
-            try {
-                
-                const connection = joinVoiceChannel({
-                    channelId: channel.id,
-                    guildId: channel.guild.id,
-                    adapterCreator: channel.guild.voiceAdapterCreator,
-                });
-
-                const player = createAudioPlayer({
-                    behaviors: {
-                        noSubscriber: NoSubscriberBehavior.Play,
-                    },
-                });
-
-                const url = interaction.options.getString('link');
-                const stream = await play.stream(url);
-                const resource = createAudioResource(stream.stream, { inputType: stream.type });
-
-                player.play(resource);
-                
-                connection.subscribe(player);
-
-                player.on('error', console.error);
-                
-                await interaction.reply('playing...');
-            } catch (error) {
-                console.error(error);
-                await interaction.reply('cannot play this song :(');
-            }
-        } else {
-            await interaction.reply('Join a voice channel');
-        }
+        await play(interaction);
     },
 };
