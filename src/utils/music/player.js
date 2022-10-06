@@ -5,64 +5,71 @@ const players = new Map();
 
 async function play(interaction) {
 
-    let currentPlayer;
-    const { guildId } = interaction;
-
     await interaction.reply('Searching song...');
     
+    const { guildId } = interaction;
+
     const channel = interaction.member.voice.channel;
     if (channel) {
-        
-        if (players.has(guildId)) {
-            currentPlayer = players.get(guildId);
-        } else {
-            currentPlayer = {
-                player: createAudioPlayer(),
-                queue: {
-                    tracks: [],
-                },
-            };
-
-            players.set(guildId, currentPlayer);
-        }
-        
-        const { player, queue } = currentPlayer;
-
         try {
-            const connection = connectToChannel(channel);
 
             const url = interaction.options.getString('link');
             const info = await playdl.search(url);
 
-            queue.tracks.push({
-                title: info[0].title,
-                url:   info[0].url,
-            });
+            let currentPlayer;
+            if (players.has(guildId)) {
 
-            if (!queue.current) {
-                queue.current = queue.tracks[0];
+                currentPlayer = players.get(guildId);
+
+                currentPlayer.queue.push({
+                    title: info[0].title,
+                    url:   info[0].url,
+                });
+
+            } else {
+                const player = createAudioPlayer();
+                const connection = connectToChannel(channel);
+
+                connection.subscribe(player);
 
                 const stream = await playdl.stream(url);
                 const resource = createAudioResource(stream.stream, { inputType: stream.type });
-    
+
                 player.play(resource);
-    
-                connection.subscribe(player);
-    
-                await interaction.editReply(`Playing: **${info[0].title}**`);
 
                 player.on(AudioPlayerStatus.Idle, async () => {
+                    console.log('idle...');
+                    if (players.has(guildId)) {
+                        const p = players.get(guildId);
+
+                        p.queue.shift();
+                        if (p.queue.length > 0) {
+                            const stream = await playdl.stream(p.queue[0].url);
+                            const resource = createAudioResource(stream.stream, { inputType: stream.type });
+
+                            player.play(resource);
+                        } else {
+                            players.delete(guildId);
+                        }
+                    }
                 });
                 
-            } else {
-                await interaction.editReply(`Added song **${info[0].title}** to queue`);
+                const newPlayer = {
+                    player,
+                    connection,
+                    queue: [],
+                };
+                
+                newPlayer.queue.push({
+                    title: info[0].title,
+                    url:   info[0].url,
+                });               
+                
+                players.set(guildId, newPlayer);
+
+                await interaction.editReply(`Playing: **${info[0].title}**`);
+                
             }
-
-            players.set(guildId, { 
-                player,
-                queue,
-            });
-
         } catch (error) {
             console.error(error);
             await interaction.editReply('cannot play this song :(');
