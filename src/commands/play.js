@@ -13,5 +13,5 @@ module.exports = (client) => {
         async execute(interaction) {
             await play(interaction, client);
         },
-    }
+    };
 };

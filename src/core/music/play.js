@@ -67,6 +67,8 @@ function addSongToQueue(client, guildId, info) {
     client.players[guildId].queue.push({
         title: info[0].title,
         url: info[0].url,
+        thumbnail: info[0].thumbnails[0].url ?? '',
+        duration: info[0].durationRaw,
     });
 }
 
