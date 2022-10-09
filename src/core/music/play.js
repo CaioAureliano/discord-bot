@@ -92,4 +92,4 @@ async function playSong(player, resource, interaction, info) {
     await interaction.editReply(`Playing: **${info[0].title}**`);
 }
 
-module.exports = { play };
+module.exports = { play, playNextSong };
