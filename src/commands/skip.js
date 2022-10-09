@@ -15,7 +15,7 @@ module.exports = (client) => {
 
             await interaction.reply('Skipped!');
 
-            await playNextSong(client, guildId, interaction, [client.players[guildId].queue[0]]);
+            await playNextSong(client, guildId, interaction, client.players[guildId].queue);
         },
     };
 };
