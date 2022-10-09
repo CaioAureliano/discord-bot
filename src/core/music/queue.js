@@ -1,9 +1,10 @@
 const { EmbedBuilder } = require("discord.js");
+const { buildEmbed } = require('../utils/embed');
 
 async function queue(interaction, client) {
     const { guildId, channel } = interaction;
 
-    if (client.players[guildId] === undefined || !client.players[guildId].queue.length) {
+    if (client.players[guildId] === undefined || client.players[guildId].queue.length <= 1) {
         return await interaction.reply('Not found songs');
     }
 
@@ -14,15 +15,6 @@ async function queue(interaction, client) {
 
     channel.send({ embeds: embedSongs });
     await interaction.reply(`List with next ${songs.length} songs in queue`);
-}
-
-function buildEmbed(song) {
-    return new EmbedBuilder()
-            .setColor('Random')
-            .setTitle(song.title)
-            .setURL(song.url)
-            .setDescription(`Duration: ${song.duration}`)
-            .setThumbnail(song.thumbnail);
 }
 
 module.exports = { queue };

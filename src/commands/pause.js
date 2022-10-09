@@ -16,6 +16,7 @@ module.exports = (client) => {
             player.pause();
 
             await interaction.reply('Paused');
+            setTimeout(async _ => await interaction.deleteReply(), 5000)
         },
     };
 };
