@@ -6,7 +6,7 @@ const eventsHandler = require('./core/handlers/events');
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildVoiceStates] });
 
 client.commands = new Collection();
-client.players  = new Map();
+client.players = {};
 
 commandsHandler(client, __dirname);
 eventsHandler(client, __dirname);
