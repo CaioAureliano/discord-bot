@@ -1,6 +1,6 @@
 require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const { REST, Routes } = require('discord.js');
 
 const commands = [];
@@ -9,7 +9,7 @@ const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('
 
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
+    const command = require(filePath)({});
     commands.push(command.data.toJSON());
 }
 
