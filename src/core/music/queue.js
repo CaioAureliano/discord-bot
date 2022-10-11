@@ -1,4 +1,3 @@
-const { EmbedBuilder } = require("discord.js");
 const { buildEmbed } = require('../utils/embed');
 
 async function queue(interaction, client) {
